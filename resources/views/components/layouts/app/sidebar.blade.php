@@ -24,9 +24,9 @@
                 <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
             </flux:navlist.group>
-             <flux:navlist.item icon="shopping-bag" :href="route('pos')"
-                    :current="request()->routeIs('pos')" wire:navigate>{{ __('POS') }}
-                </flux:navlist.item>
+            <flux:navlist.item icon="shopping-bag" :href="route('pos')" :current="request()->routeIs('pos')"
+                wire:navigate>{{ __('POS') }}
+            </flux:navlist.item>
             <flux:navlist.group :heading="__('Management')" class="grid">
                 <flux:navlist.item icon="users" :href="route('customers.index')"
                     :current="request()->routeIs('customers.index')" wire:navigate>{{ __('Manage Customers') }}
@@ -35,8 +35,8 @@
                     :current="request()->routeIs('payment.method.index')" wire:navigate>
                     {{ __('Manage Payment Methods') }}
                 </flux:navlist.item>
-                <flux:navlist.item icon="user-group" :href="route('users.index')" :current="request()->routeIs('users.index')"
-                    wire:navigate>{{ __('Manage Users') }}
+                <flux:navlist.item icon="user-group" :href="route('users.index')"
+                    :current="request()->routeIs('users.index')" wire:navigate>{{ __('Manage Users') }}
                 </flux:navlist.item>
             </flux:navlist.group>
             <flux:navlist.group :heading="__('Inventory Management')" class="grid">
@@ -47,8 +47,14 @@
                 </flux:navlist.item>
             </flux:navlist.group>
             <flux:navlist.group :heading="__('Sales')" class="grid">
-                <flux:navlist.item icon="chart-bar" :href="route('sales.index')" :current="request()->routeIs('sales.index')"
-                    wire:navigate>{{ __('Sales') }}</flux:navlist.item>
+                <flux:navlist.item icon="chart-bar" :href="route('sales.index')"
+                    :current="request()->routeIs('sales.index')" wire:navigate>{{ __('Sales') }}</flux:navlist.item>
+            </flux:navlist.group>
+            <flux:navlist.group :heading="__('Subscription')" class="grid">
+                <flux:navlist.item icon="star" :href="route('membership.index')" :current="request()->routeIs('membership')"
+                    wire:navigate>
+                    {{ __('Membership') }}
+                </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 

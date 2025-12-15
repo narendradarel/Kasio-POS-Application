@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Models\UserMembership;
 
 class User extends Authenticatable
 {
@@ -59,4 +60,15 @@ class User extends Authenticatable
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
+    public function userMembership()
+    {
+        return $this->hasOne(UserMembership::class)
+            ->where('status', 'active');
+    }
+
+    public function activeMembership()
+    {
+        return $this->userMembership?->membership;
+    }
+
 }

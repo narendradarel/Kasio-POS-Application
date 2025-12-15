@@ -15,8 +15,10 @@ use App\Livewire\Management\EditPaymentMethod;
 use App\Livewire\Management\EditUser;
 use App\Livewire\Management\ListPaymentMethods;
 use App\Livewire\Management\ListUsers;
+use App\Livewire\Membership\ListMembership;
 use App\Livewire\POS;
 use App\Livewire\Sales\ListSales;
+use App\Livewire\Membership\Index as MembershipIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -67,6 +69,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/edit-payment-method/{record}',EditPaymentMethod::class)->name('payment-method.update');
 
     Route::get('/pos',POS::class)->name('pos');
+
+    Route::get('/memberships',ListMembership::class)->name('membership.index');
 }); 
 
 require __DIR__.'/auth.php';
