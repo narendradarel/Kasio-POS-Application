@@ -11,17 +11,14 @@ return new class extends Migration
         Schema::create('membership_payments', function (Blueprint $table) {
             $table->id();
 
-            // user yang bayar
             $table->foreignId('user_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            // paket membership
             $table->foreignId('membership_id')
                 ->constrained()
                 ->restrictOnDelete();
 
-            // midtrans
             $table->string('order_id')->unique();
             $table->integer('amount');
 
