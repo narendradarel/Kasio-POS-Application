@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "Laravel"
+        DOCKER_IMAGE = "laravel-kasir"
+        CONTAINER_NAME = "laravel_kasir_app"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE .'
+                }
+            }
+        }
+
+        stage('Stop & Remove Old Container') {
+            steps {
+                script {
+                    sh '''
+                    if [ $(docker ps -aq -f name=$CONTAINER_NAME | wc -l) -gt 0 ]; then
+                        docker stop $CONTAINER_NAME || true
+                        docker rm $CONTAINER_NAME || true
+                    fi
+                    '''
+                }
+            }
+        }
+
+        stage('Run Container (Docker Compose)') {
+            steps {
+                script {
+                    sh 'docker compose up -d --build'
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    sh 'docker compose exec -T app composer install --no-interaction --prefer-dist'
+                }
+            }
+        }
+
+        stage('Laravel Setup') {
+            steps {
+                script {
+                    sh '''
+                    docker compose exec -T app php artisan key:generate || true
+                    docker compose exec -T app php artisan migrate --force
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Build & Deploy Laravel berhasil'
+        }
+        failure {
+            echo '❌ Build gagal, cek log Jenkins'
+        }
+    }
+}
