@@ -39,9 +39,8 @@ pipeline {
         stage('Waiting for Database') {
             steps {
                 script {
-                    echo '⏳ Menunggu Database MySQL siap...'
-                    // WINDOWS: Gunakan 'timeout' bukan 'sleep'
-                    bat 'timeout /t 15' 
+                    echo '⏳ Menunggu Database MySQL booting...'
+                    sleep 15  
                 }
             }
         }
