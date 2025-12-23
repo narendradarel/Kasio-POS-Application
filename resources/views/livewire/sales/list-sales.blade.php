@@ -29,7 +29,7 @@
                     <span>Export Report</span>
                 </button>
             @else
-                {{-- JIKA MEMBER FREE (TOMBOL LOCKED) --}}
+                {{-- MEMBER FREE (TOMBOL LOCKED) --}}
                 <button type="button" onclick="alert('Fitur ini khusus Premium Member! Silakan upgrade membership Anda.')"
                     class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-400 font-medium px-4 py-2 rounded-lg cursor-not-allowed border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                     
