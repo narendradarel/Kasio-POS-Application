@@ -9,7 +9,7 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
-use Sale;
+use App\Models\Sale;
 
 class EditSale extends Component implements HasActions, HasSchemas
 {
