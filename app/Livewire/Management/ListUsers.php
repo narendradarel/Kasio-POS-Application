@@ -42,10 +42,23 @@ class ListUsers extends Component implements HasActions, HasSchemas, HasTable
                 //
             ])
             ->headerActions([
-               Action::make('create')
-                ->label('Add New')
-                ->url(fn (): string => route('users.create'))
-            ])
+                Action::make('create')
+                    ->label('Add User')
+                    ->icon('heroicon-o-user-plus')
+                    ->url(fn () => route('users.create'))
+                    ->disabled(fn () => ! auth()->user()->canCreateUser())
+                    ->tooltip(
+                        fn () => ! auth()->user()->canCreateUser()
+                            ? 'Limit user tercapai. Upgrade membership.'
+                            : null
+                    ),
+                Action::make('upgrade')
+                    ->label('Upgrade')
+                    ->icon('heroicon-o-star')
+                    ->color('warning')
+                    ->url(route('membership.index'))
+                    ->visible(fn () => ! auth()->user()->canCreateUser()),
+    ])
             ->recordActions([
                 Action::make('delete')
                 ->requiresConfirmation()

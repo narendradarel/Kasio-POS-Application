@@ -1,52 +1,46 @@
-version: "3.9"
+version: '3.8'
 
 services:
+  # 1. Ini Aplikasi Laravel Kamu
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel_kasir_app
+    image: kasio
+    container_name: kasio-app
     restart: unless-stopped
     ports:
-      - "8000:80"
-    volumes:
-      - .:/var/www/html
+      - "8081:80" # Akses di browser via localhost:8081
     environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
       DB_CONNECTION: mysql
-      DB_HOST: db
+      DB_HOST: db # Perhatikan ini! Kita panggil nama servicenya 'db'
       DB_PORT: 3306
-      DB_DATABASE: kasir_pos
-      DB_USERNAME: root
-      DB_PASSWORD: root
+      DB_DATABASE: kasio
+      DB_USERNAME: kasio_user
+      DB_PASSWORD: password123
     depends_on:
       - db
+    networks:
+      - kasio-network
 
+  # 2. Ini Database MySQL (Pengganti XAMPP)
   db:
     image: mysql:8.0
-    container_name: mysql_kasir_db
+    container_name: kasio-db
     restart: unless-stopped
-    ports:
-      - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: kasir_pos
+      MYSQL_DATABASE: kasio
+      MYSQL_USER: kasio_user
+      MYSQL_PASSWORD: password123
+      MYSQL_ROOT_PASSWORD: rootpassword
     volumes:
-      - mysql_data:/var/lib/mysql
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin_kasir
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: root
-    depends_on:
-      - db
+      - db_data:/var/lib/mysql # Supaya data tidak hilang saat docker dimatikan
+    networks:
+      - kasio-network
 
 volumes:
-  mysql_data:
+  db_data:
+
+networks:
+  kasio-network:
+    driver: bridge

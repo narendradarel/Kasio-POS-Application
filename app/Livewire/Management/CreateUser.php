@@ -4,78 +4,67 @@ namespace App\Livewire\Management;
 
 use App\Models\User;
 use Livewire\Component;
-use Filament\Schemas\Schema;
-use Illuminate\Contracts\View\View;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Section;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Schemas\Contracts\HasSchemas;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Illuminate\Validation\Rule;
 
-
-class CreateUser extends Component implements HasActions, HasSchemas
+class CreateUser extends Component
 {
-    use InteractsWithActions;
-    use InteractsWithSchemas;
+    // Properti Form Standar
+    public $name = '';
+    public $email = '';
+    public $role = 'cashier'; // Default cashier
+    public $password = '';
 
-    public ?array $data = [];
-
-    public function mount(): void
+    public function mount()
     {
-        $this->form->fill();
+        $user = auth()->user();
+
+        // 1. CEK LIMIT SAAT LOAD (UX)
+        if (! $user->canCreateUser()) {
+            Notification::make()
+                ->title('Akses Ditolak')
+                ->body("Limit User paket Membership Anda sudah habis.")
+                ->danger()
+                ->send();
+
+            $this->redirect(route('users.index'), navigate: true);
+        }
     }
 
-    public function form(Schema $schema): Schema
+    public function save()
     {
-        return $schema
-            ->components([
-                Section::make('Create user')
-                    ->description('Add new user details!')
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('name')
-                        ->required(),
-                        TextInput::make('email')
-                            ->required()
-                            ->unique(ignoreRecord: true),
-                        Select::make('role')
-                            ->required()
-                            ->options([
-                                'cashier' => 'Cashier',
-                                'admin' => 'admin',
-                                'other' => 'Other',
-                            ])
-                            ->native(false),
-                        TextInput::make('password')
-                            ->required()
-                            ->password()
-                            ->revealable()
-                            ->unique(ignoreRecord: true),
-                    ])
-            ])
-            ->statePath('data')
-            ->model(User::class);
-    }
+        // 2. CEK LIMIT SAAT SAVE (SECURITY)
+        if (! auth()->user()->canCreateUser()) {
+            Notification::make()->title('Gagal')->body('Limit Habis!')->danger()->send();
+            return;
+        }
 
-    public function create(): void
-    {
-        $data = $this->form->getState();
+        // Validasi Manual Livewire
+        $validated = $this->validate([
+            'name'     => 'required|min:3',
+            'email'    => 'required|email|unique:users,email',
+            'role'     => 'required|in:admin,cashier,other',
+            'password' => 'required|min:6',
+        ]);
 
-        $record = User::create($data);
-
-        $this->form->model($record)->saveRelationships();
+        // Simpan User
+        User::create([
+            'name'     => $this->name,
+            'email'    => $this->email,
+            'role'     => $this->role,
+            'password' => $this->password, // Model User biasanya sudah auto-hash, atau pakai bcrypt($this->password)
+        ]);
 
         Notification::make()
-            ->title('User Created!')
+            ->title('Berhasil')
+            ->body('User baru berhasil dibuat.')
             ->success()
-            ->body("User created successfully!")
             ->send();
+
+        $this->redirect(route('users.index'), navigate: true);
     }
 
-    public function render(): View
+    public function render()
     {
         return view('livewire.management.create-user');
     }

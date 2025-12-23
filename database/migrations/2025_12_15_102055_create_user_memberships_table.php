@@ -13,22 +13,16 @@ return new class extends Migration
     {
         Schema::create('user_memberships', function (Blueprint $table) {
             $table->id();
-
-            // FK ke users
-            $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
-            // FK ke memberships
-            $table->foreignId('membership_id')
-                ->constrained()
-                ->restrictOnDelete();
-
-            $table->timestamp('starts_at');
-            $table->timestamp('ends_at')->nullable();
-
-            $table->enum('status', ['active', 'expired']);
-
+            
+            // Relasi (Wajib)
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('membership_id')->constrained()->onDelete('cascade');
+            
+            // Status & Tanggal (Ini yang bikin error sebelumnya)
+            $table->string('status')->default('active'); 
+            $table->timestamp('started_at')->nullable(); // <--- INI WAJIB ADA
+            $table->timestamp('ends_at')->nullable();    // <--- INI WAJIB ADA
+            
             $table->timestamps();
         });
     }

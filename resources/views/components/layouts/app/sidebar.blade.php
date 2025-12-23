@@ -51,8 +51,8 @@
                     :current="request()->routeIs('sales.index')" wire:navigate>{{ __('Sales') }}</flux:navlist.item>
             </flux:navlist.group>
             <flux:navlist.group :heading="__('Subscription')" class="grid">
-                <flux:navlist.item icon="star" :href="route('membership.index')" :current="request()->routeIs('membership')"
-                    wire:navigate>
+                <flux:navlist.item icon="star" :href="route('membership.index')"
+                    :current="request()->routeIs('membership')" wire:navigate>
                     {{ __('Membership') }}
                 </flux:navlist.item>
             </flux:navlist.group>
@@ -60,17 +60,36 @@
 
         <flux:spacer />
 
-        <flux:navlist variant="outline">
-            <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit"
-                target="_blank">
-                {{ __('Repository') }}
-            </flux:navlist.item>
+        @php
+            $membership = auth()->user()?->membership_name ?? 'Free';
+        @endphp
 
-            <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire"
-                target="_blank">
-                {{ __('Documentation') }}
-            </flux:navlist.item>
-        </flux:navlist>
+        <div class="mx-3 mb-4 rounded-xl border border-zinc-200 bg-zinc-100 px-3 py-2 text-sm
+            dark:border-zinc-700 dark:bg-zinc-800">
+            <div class="flex items-center justify-between">
+                <span class="text-zinc-500 dark:text-zinc-400">
+                    Membership
+                </span>
+
+                @if($membership === 'Free')
+                    <span class="rounded-md bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-400">
+                        Free
+                    </span>
+                @elseif($membership === 'Basic')
+                    <span class="rounded-md bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-400">
+                        Basic
+                    </span>
+                @else
+                    <span class="rounded-md bg-indigo-500/10 px-2 py-0.5 text-xs font-medium text-indigo-400">
+                        Premium
+                    </span>
+                @endif
+            </div>
+
+            <a href="{{ route('membership.index') }}" class="mt-1 block text-xs text-zinc-400 hover:text-white">
+                Upgrade membership →
+            </a>
+        </div>
 
         <!-- Desktop User Menu -->
         <flux:dropdown class="hidden lg:block" position="bottom" align="start">

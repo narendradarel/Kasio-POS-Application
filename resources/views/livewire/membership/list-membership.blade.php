@@ -1,5 +1,5 @@
-<div> 
-    <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6"> 
+<div>
+    <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach ($memberships as $membership)
                 <div class="flex flex-col">
@@ -20,10 +20,11 @@
                         @endforeach
                     </ul>
 
-                    <button
-                        class="mt-auto w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition">
+                    <button wire:click="selectMembership('{{ $membership['name'] }}')"
+                        class="mt-auto w-full py-3 rounded-xl bg-indigo-600 text-white">
                         Pilih Paket
                     </button>
+
                 </div>
             @endforeach
         </div>
@@ -32,9 +33,9 @@
         <hr class="border-t border-gray-200 dark:border-neutral-700 mt-8 mb-4">
 
         <div class="py-16 flex flex-col">
-            <div class="text-center w-full"> 
+            <div class="text-center w-full">
                 {{-- Konten teks bisa diatur max-width di sini jika mau lebih sempit --}}
-                
+
                 <h3 class="text-3xl font-extrabold text-indigo-600 mb-2 sm:text-4xl dark:text-indigo-400">
                     Tingkatkan Penjualan Anda Hingga 50%
                 </h3>
@@ -43,7 +44,7 @@
                     Dapatkan fitur manajemen inventori dan analisis penjualan canggih yang hanya tersedia di paket
                     **Premium**.
                 </p>
-                
+
             </div>
         </div>
         {{-- AKHIR BANNER --}}

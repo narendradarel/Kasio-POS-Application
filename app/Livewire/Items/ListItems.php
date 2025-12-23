@@ -49,9 +49,23 @@ class ListItems extends Component implements HasActions, HasSchemas, HasTable
             ])
             ->headerActions([
                 Action::make('create')
-                ->label('Add New')
-                ->url(fn (): string => route('items.create'))
-            ])
+                    ->label('Add New')
+                    ->icon('heroicon-o-plus')
+                    ->url(fn (): string => route('items.create'))
+                    ->disabled(fn () => ! auth()->user()->canCreateProduct())
+                    ->tooltip(
+                        fn () => ! auth()->user()->canCreateProduct()
+                            ? 'Limit produk tercapai. Upgrade membership.'
+                            : null
+                    ),
+
+                Action::make('upgrade')
+                    ->label('Upgrade')
+                    ->icon('heroicon-o-star')
+                    ->color('warning')
+                    ->url(route('membership.index'))
+                    ->visible(fn () => ! auth()->user()->canCreateProduct()),
+])
             ->recordActions([
                 Action::make('delete')
                 ->requiresConfirmation()

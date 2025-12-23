@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class UserMembership extends Model
 {
@@ -12,9 +12,9 @@ class UserMembership extends Model
     protected $fillable = [
         'user_id',
         'membership_id',
-        'starts_at',
-        'ends_at',
         'status',
+        'started_at', // <--- Pastikan ini 'started_at', BUKAN 'starts_at'
+        'ends_at',
     ];
 
     protected $casts = [
@@ -32,5 +32,11 @@ class UserMembership extends Model
     public function membership()
     {
         return $this->belongsTo(Membership::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active'
+            && ($this->ends_at === null || now()->lte($this->ends_at));
     }
 }

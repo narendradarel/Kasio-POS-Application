@@ -1,4 +1,36 @@
 <div class="flex h-screen bg-gray-100 dark:bg-neutral-900 font-sans antialiased text-gray-800 dark:text-gray-100">
+    {{-- === 1. TAMBAHAN: HARDBLOCK OVERLAY === --}}
+    @if($isLocked)
+        <div class="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm">
+            <div
+                class="bg-white dark:bg-neutral-800 p-8 rounded-2xl shadow-2xl text-center max-w-md mx-4 border border-red-200 dark:border-red-900">
+                <div class="text-red-500 mb-4 flex justify-center">
+                    {{-- Icon Gembok --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-16 h-16">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">Limit Transaksi Habis!</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">
+                    Kuota harian paket Anda telah mencapai batas <strong>{{ $todaySales }} / {{ $dailyLimit }}</strong>
+                    transaksi.
+                </p>
+                <div class="space-y-3">
+                    <button disabled class="w-full py-3 bg-gray-400 text-white font-bold rounded-xl cursor-not-allowed">
+                        Tidak Bisa Transaksi
+                    </button>
+                    {{-- Tombol Upgrade (Opsional, arahkan ke route pricing kamu) --}}
+                    {{-- <a href="/pricing"
+                        class="block w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition">
+                        Upgrade Sekarang
+                    </a> --}}
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="w-2/3 p-6 flex flex-col">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Products</h2>
 
@@ -24,7 +56,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($this->filteredItems as $item)
                     <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg overflow-hidden 
-                                         transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
+                                             transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
                         <div class="p-4">
                             <div
                                 class="w-full h-32 bg-gray-200 dark:bg-neutral-700 rounded-lg mb-3 flex items-center justify-center text-gray-400">
@@ -37,7 +69,7 @@
                             </p>
                         </div>
                         <button wire:click="addToCart({{ $item->id }})" class="w-full py-3 bg-indigo-600 text-white font-bold transition-colors duration-200 
-                                                 hover:bg-indigo-700 rounded-b-2xl">
+                                                     hover:bg-indigo-700 rounded-b-2xl">
                             Add to Cart
                         </button>
                     </div>
@@ -47,7 +79,7 @@
             </div>
         </div>
     </div>
- {{-- Right panel --}}
+    {{-- Right panel --}}
     <div
         class="w-1/3 bg-white dark:bg-neutral-800 border-l dark:border-neutral-700 p-6 flex flex-col shadow-xl overflow-y-auto">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Checkout</h2>
@@ -57,16 +89,17 @@
                     <div class="flex-1">
                         <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $cartItem['name'] }}</h4>
                         <p class="text-xs text-gray-500 dark:text-gray-400">SKU: {{ $cartItem['sku'] }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">$ {{ number_format($cartItem['price'], 2) }} each</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">$ {{ number_format($cartItem['price'], 2) }}
+                            each</p>
                     </div>
 
                     <div class="flex items-center space-x-2">
                         <input type="number" min="1" wire:model.live.debounce.500ms="cart.{{ $cartItem['id'] }}.quantity"
                             class="py-2.5 sm:py-3 px-4 block w-20 border-gray-200 rounded-lg sm:text-sm 
-                                                 focus:border-blue-500 focus:ring-blue-500 
-                                                 dark:bg-neutral-900 dark:border-neutral-700 
-                                                 dark:text-neutral-400 dark:placeholder-neutral-500 
-                                                 dark:focus:ring-neutral-600">
+                                                     focus:border-blue-500 focus:ring-blue-500 
+                                                     dark:bg-neutral-900 dark:border-neutral-700 
+                                                     dark:text-neutral-400 dark:placeholder-neutral-500 
+                                                     dark:focus:ring-neutral-600">
 
                         <button wire:click="removeFromCart({{ $cartItem['id'] }})"
                             class="p-2 text-red-500 hover:text-red-700 dark:hover:text-red-400">
@@ -160,28 +193,45 @@
                        dark:bg-neutral-900 dark:border-neutral-700 
                        dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
 
-            <button wire:click="checkout" wire:loading.attr="disabled" class="w-full py-4 bg-green-600 text-white font-bold text-lg rounded-xl 
-                       transition-colors duration-200 hover:bg-green-700 disabled:opacity-50 
-                       disabled:cursor-not-allowed shadow-lg">
-                Complete Sale
+            <button wire:click="checkout" 
+                wire:loading.attr="disabled" 
+                @if($isLocked) disabled @endif
+                class="w-full py-4 font-bold text-lg rounded-xl text-white shadow-lg transition-all duration-200 
+                {{ $isLocked 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed' 
+                }}">
+                
+                @if($isLocked)
+                    {{-- Tampilan saat Terkunci (Limit Habis) --}}
+                    <div class="flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        <span>Limit Habis ({{ $todaySales }}/{{ $dailyLimit }})</span>
+                    </div>
+                @else
+                    {{-- Tampilan Normal --}}
+                    Complete Sale
+                @endif
             </button>
         </div>
     </div>
-     <script>
+    <script>
 
         function printReceipt(url) {
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = url;
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
 
-        iframe.onload = function () {
-            setTimeout(() => {
-                iframe.contentWindow.focus();
-                iframe.contentWindow.print();
-            }, 500); // Small delay to ensure content is fully rendered
-        };
+            iframe.onload = function () {
+                setTimeout(() => {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                }, 500); // Small delay to ensure content is fully rendered
+            };
 
-        document.body.appendChild(iframe);
-    }
+            document.body.appendChild(iframe);
+        }
     </script>
 </div>

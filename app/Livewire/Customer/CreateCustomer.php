@@ -23,6 +23,9 @@ class CreateCustomer extends Component implements HasActions, HasSchemas
 
     public function mount(): void
     {
+        abort_if(! auth()->user()->canCreateCustomer(), 403);
+        'Limit customer tercapai. Upgrade membership.';
+
         $this->form->fill();
     }
 
@@ -60,6 +63,8 @@ class CreateCustomer extends Component implements HasActions, HasSchemas
         ->body("Customer Created successfully!")
         ->send();
     }
+
+
 
     public function render(): View
     {

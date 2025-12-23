@@ -1,43 +1,50 @@
-# Base image PHP + Apache
+# 1. Gunakan PHP 8.2
 FROM php:8.2-apache
 
-# Install system dependencies
+# 2. Install library sistem + CURL (untuk download Node.js)
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
     libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libicu-dev \
-    libcurl4-openssl-dev \
-    && docker-php-ext-install \
-    pdo_mysql \
-    mbstring \
     zip \
-    exif \
-    pcntl \
-    intl \
-    bcmath
+    unzip \
+    libicu-dev \
+    curl \
+    gnupg \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install pdo_mysql zip intl
 
-# Enable Apache mod_rewrite
+# 3. --- TAMBAHAN BARU: Install Node.js v18 & NPM ---
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
+# 4. Aktifkan mod_rewrite
 RUN a2enmod rewrite
 
-# Set working directory
+# 5. Set folder kerja
 WORKDIR /var/www/html
 
-# Copy composer from official image
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Copy project files
+# 6. Copy semua file project
 COPY . .
 
-# Set permission for Laravel
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# 7. Install Composer (PHP Dependencies)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Expose port
+# 8. --- TAMBAHAN BARU: Build Aset Frontend (CSS/JS) ---
+RUN npm install
+RUN npm run build
+
+# 9. Set Permission Folder
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# 10. Konfigurasi Apache
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+
+# Fix Apache Routing (Login 404)
+RUN echo "<Directory /var/www/html/public>" >> /etc/apache2/apache2.conf && \
+    echo "    AllowOverride All" >> /etc/apache2/apache2.conf && \
+    echo "</Directory>" >> /etc/apache2/apache2.conf
+
+# 11. Expose
 EXPOSE 80
-
-# Start Apache
-CMD ["apache2-foreground"]

@@ -26,6 +26,11 @@ class CreateItem extends Component implements HasActions, HasSchemas
 
     public function mount(): void
     {
+    abort_if(
+        ! auth()->user()->canCreateProduct(),
+        403,
+        'Limit product tercapai. Upgrade membership.'
+    );
         $this->form->fill();
     }
 

@@ -19,6 +19,7 @@ use App\Livewire\Membership\ListMembership;
 use App\Livewire\POS;
 use App\Livewire\Sales\ListSales;
 use App\Livewire\Membership\Index as MembershipIndex;
+use App\Livewire\Membership\CheckoutMembership;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -71,6 +72,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pos',POS::class)->name('pos');
 
     Route::get('/memberships',ListMembership::class)->name('membership.index');
+    Route::get( '/membership-checkout/{membershipName}', CheckoutMembership::class)->name('membership.checkout');
+
+    Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handle']);
+
 }); 
 
 require __DIR__.'/auth.php';

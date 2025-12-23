@@ -17,6 +17,7 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ListSales extends Component implements HasActions, HasSchemas, HasTable
 {
@@ -68,6 +69,27 @@ class ListSales extends Component implements HasActions, HasSchemas, HasTable
                     //
                 ]),
             ]);
+    }
+
+    public function downloadPdf()
+    {
+        // Security Check
+        if (! auth()->user()->canExportReport()) {
+            Notification::make()
+                ->title('Akses Ditolak')
+                ->body('Upgrade membership Anda untuk fitur ini.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        // Proses Download
+        $sales = Sale::with(['user', 'customer', 'saleItems.item'])->latest()->get();
+        $pdf = Pdf::loadView('pdf.sales-report', ['sales' => $sales]);
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'laporan-penjualan-' . now()->format('Y-m-d') . '.pdf');
     }
 
     public function render(): View

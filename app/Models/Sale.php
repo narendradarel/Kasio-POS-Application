@@ -11,12 +11,18 @@ class Sale extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'customer_id',
         'payment_method_id',
         'total',
         'paid_amount',
         'discount',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     public function customer()
     {
         return $this->belongsTo(Customer::class);

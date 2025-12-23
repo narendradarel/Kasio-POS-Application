@@ -13,6 +13,7 @@ class ListMembership extends Component
     {
         $this->memberships = [
             [
+                'key' => 'free',
                 'name' => 'Free',
                 'price' => 0,
                 'features' => [
@@ -24,6 +25,7 @@ class ListMembership extends Component
                 ],
             ],
             [
+                'key' => 'basic',
                 'name' => 'Basic',
                 'price' => 50000,
                 'features' => [
@@ -35,6 +37,7 @@ class ListMembership extends Component
                 ],
             ],
             [
+                'key' => 'premium',
                 'name' => 'Premium',
                 'price' => 100000,
                 'features' => [
@@ -47,6 +50,30 @@ class ListMembership extends Component
             ],
         ];
     }
+
+public function selectMembership(string $name)
+{
+    $membership = collect($this->memberships)
+        ->firstWhere('name', $name);
+
+    if (! $membership) {
+        abort(404);
+    }
+
+    session([
+        'membership_payment' => [
+            'name' => $membership['name'],
+            'price' => $membership['price'],
+            'status' => 'pending',
+        ]
+    ]);
+
+    return redirect()->route(
+        'membership.checkout',
+        ['membershipName' => $membership['name']]
+    );
+}
+
 
     public function render(): View
     {

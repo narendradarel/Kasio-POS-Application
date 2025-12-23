@@ -41,9 +41,24 @@ class ListCustomers extends Component implements HasActions, HasSchemas, HasTabl
             ])
             ->headerActions([
                 Action::make('create')
-                ->label('Add New Customer')
-                ->url(fn() => route('customers.create'))
+                    ->label('Add Customer')
+                    ->icon('heroicon-o-user-plus')
+                    ->url(fn () => route('customers.create'))
+                    ->disabled(fn () => ! auth()->user()->canCreateCustomer())
+                    ->tooltip(
+                        fn () => ! auth()->user()->canCreateCustomer()
+                            ? 'Limit customer tercapai. Upgrade membership.'
+                            : null
+                    ),
+
+                Action::make('upgrade')
+                    ->label('Upgrade')
+                    ->icon('heroicon-o-star')
+                    ->color('warning')
+                    ->url(route('membership.index'))
+                    ->visible(fn () => ! auth()->user()->canCreateCustomer()),
             ])
+
             ->recordActions([
                 Action::make('delete')
                     ->requiresConfirmation()
