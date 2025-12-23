@@ -9,7 +9,6 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Menarik kodingan dari Git
                 checkout scm
             }
         }
@@ -17,14 +16,12 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 script {
-                    // Buat file .env dari example jika belum ada
-                    // Di Production asli, biasanya pakai Credentials Jenkins
-                    sh 'cp .env.example .env || true'
-                    
-                    // Pastikan DB host mengarah ke nama service docker-compose ('db')
-                    // Kita replace DB_HOST=127.0.0.1 jadi DB_HOST=db
-                    sh "sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env"
-                    sh "sed -i 's/DB_PASSWORD=/DB_PASSWORD=password123/g' .env"
+                    bat 'copy .env.example .env || exit 0'
+                
+                    powershell '''
+                        (Get-Content .env) -replace "DB_HOST=127.0.0.1", "DB_HOST=db" | Set-Content .env
+                        (Get-Content .env) -replace "DB_PASSWORD=", "DB_PASSWORD=password123" | Set-Content .env
+                    '''
                 }
             }
         }
@@ -32,9 +29,9 @@ pipeline {
         stage('Build & Run Docker') {
             steps {
                 script {
-                    // Matikan container lama & nyalakan yang baru (rebuild)
-                    sh 'docker compose down || true'
-                    sh 'docker compose up -d --build'
+                    // WINDOWS: Gunakan 'bat'
+                    bat 'docker compose down || exit 0'
+                    bat 'docker compose up -d --build'
                 }
             }
         }
@@ -43,8 +40,8 @@ pipeline {
             steps {
                 script {
                     echo '⏳ Menunggu Database MySQL siap...'
-                    // Jeda 15 detik agar MySQL sempat booting sebelum dimigrate
-                    sh 'sleep 15' 
+                    // WINDOWS: Gunakan 'timeout' bukan 'sleep'
+                    bat 'timeout /t 15' 
                 }
             }
         }
@@ -52,24 +49,20 @@ pipeline {
         stage('Laravel Post-Deployment') {
             steps {
                 script {
-                    // Install dependency PHP
-                    sh 'docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader'
+                    // WINDOWS: Jalankan perintah artisan di dalam container
+                    bat 'docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader'
                     
-                    // Generate Key (HANYA jika di .env APP_KEY kosong)
-                    // Tapi agar aman di tugas kuliah, kita force generate sekali di awal, 
-                    // atau biarkan pakai key dari .env.example kalau ada.
-                    sh 'docker compose exec -T app php artisan key:generate --force'
+                    // Generate key force
+                    bat 'docker compose exec -T app php artisan key:generate --force'
                     
-                    // Jalankan migrasi database
-                    sh 'docker compose exec -T app php artisan migrate --force'
+                    // Migrate Database
+                    bat 'docker compose exec -T app php artisan migrate --force'
                     
-                    // Cache config & route untuk performa
-                    sh 'docker compose exec -T app php artisan config:cache'
-                    sh 'docker compose exec -T app php artisan route:cache'
-                    sh 'docker compose exec -T app php artisan view:cache'
+                    // Cache config
+                    bat 'docker compose exec -T app php artisan config:cache'
+                    bat 'docker compose exec -T app php artisan route:cache'
                     
-                    // Beri hak akses storage lagi (jaga-jaga)
-                    sh 'docker compose exec -T app chown -R www-data:www-data /var/www/html/storage'
+                    // Note: Di Windows Docker biasanya permission sudah otomatis rw, jadi tidak perlu chown
                 }
             }
         }
@@ -77,12 +70,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Deployment Berhasil! Akses di http://IP-VM-AZURE:8081'
+            echo '✅ Deployment Berhasil di Windows!'
         }
         failure {
-            echo '❌ Deployment Gagal. Cek Console Output.'
-            // Opsional: Matikan container jika gagal total
-            // sh 'docker compose down' 
+            echo '❌ Deployment Gagal.'
         }
     }
 }
