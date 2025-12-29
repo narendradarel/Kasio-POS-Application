@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MidtransWebhookController;
 use App\Livewire\Customer\CreateCustomer;
 use App\Livewire\Customer\EditCustomers;
 use App\Livewire\Customer\ListCustomers;
@@ -46,6 +47,8 @@ Route::get('/sales/{sale}/receipt', function (\App\Models\Sale $sale) {
     return view('pdf', ['records' => collect([$sale])]);
 })->name('sales.receipt');
 
+Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handle'])->name('midtrans.webhook');
+
 Route::middleware(['auth'])->group(function () {
     //users
     Route::get('/manage-users',ListUsers::class)->name('users.index');
@@ -74,7 +77,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/memberships',ListMembership::class)->name('membership.index');
     Route::get( '/membership-checkout/{membershipName}', CheckoutMembership::class)->name('membership.checkout');
 
-    Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handle']);
 
 }); 
 

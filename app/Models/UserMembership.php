@@ -18,7 +18,7 @@ class UserMembership extends Model
     ];
 
     protected $casts = [
-        'starts_at' => 'datetime',
+        'started_at' => 'datetime',
         'ends_at' => 'datetime',
     ];
 

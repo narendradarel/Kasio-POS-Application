@@ -34,6 +34,27 @@ class User extends Authenticatable
     }
 
     /* =========================
+     | AUTO-ASSIGN MEMBERSHIP
+     ========================= */
+
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $freePlan = Membership::where('name', 'Free')->first();
+
+            if ($freePlan) {
+                UserMembership::create([
+                    'user_id'       => $user->id,
+                    'membership_id' => $freePlan->id,
+                    'status'        => 'active',
+                    'started_at'    => now(),
+                    'ends_at'       => null,
+                ]);
+            }
+        });
+    }
+
+    /* =========================
      | BASIC USER HELPERS
      ========================= */
 
@@ -57,12 +78,26 @@ class User extends Authenticatable
             ->where(function ($q) {
                 $q->whereNull('ends_at')
                     ->orWhere('ends_at', '>=', now());
-            });
+            })
+            ->latest(); // Tambahkan ini untuk ambil data terbaru
+    }
+
+    // TAMBAHKAN METHOD INI (yang dipanggil di blade)
+    public function getEffectiveMembershipAttribute()
+    {
+        $activeSub = $this->activeMembership()->with('membership')->first();
+
+        if ($activeSub && $activeSub->membership) {
+            return $activeSub->membership;
+        }
+
+        // Fallback ke Free
+        return Membership::where('name', 'Free')->first();
     }
 
     public function membershipName(): string
     {
-        return $this->activeMembership?->membership?->name ?? 'Free';
+        return $this->effective_membership?->name ?? 'Free';
     }
 
     /* =========================
@@ -71,14 +106,11 @@ class User extends Authenticatable
 
     public function userLimit(): int
     {
-        return (int) optional(
-            $this->activeMembership?->membership
-        )->user_limit ?? 0;
+        return (int) ($this->effective_membership?->user_limit ?? 1);
     }
 
     public function userCount(): int
     {
-        // hitung user aktif selain owner (atau semua, sesuaikan)
         return UserModel::count();
     }
 
@@ -97,47 +129,34 @@ class User extends Authenticatable
      | PRODUCT / ITEM LIMIT
      ========================= */
 
-    /**
-     * Total item saat ini
-     */
     public function productCount(): int
     {
         return Item::count();
-        // kalau per user / per toko → tambahkan where
     }
 
-    /**
-     * Limit item dari membership
-     * null = unlimited
-     */
     public function productLimit(): ?int
     {
-        return $this->activeMembership?->membership?->product_limit;
+        return $this->effective_membership?->product_limit;
     }
 
-    /**
-     * Boleh tambah item atau tidak
-     */
     public function canCreateProduct(): bool
     {
         $limit = $this->productLimit();
 
         if (is_null($limit)) {
-            return true; // Premium / unlimited
+            return true;
         }
 
         return $this->productCount() < $limit;
     }
 
     /* =========================
-     | CUSTOMER LIMIT (SIAP)
+     | CUSTOMER LIMIT
      ========================= */
 
-    public function customerLimit(): int
+    public function customerLimit(): ?int
     {
-        return (int) optional(
-            $this->activeMembership?->membership
-        )->customer_limit ?? 0;
+        return $this->effective_membership?->customer_limit;
     }
 
     public function customerCount(): int
@@ -149,21 +168,20 @@ class User extends Authenticatable
     {
         $limit = $this->customerLimit();
 
-        // 0 = tidak boleh
-        if ($limit === 0) {
-            return false;
+        if (is_null($limit)) {
+            return true;
         }
 
         return $this->customerCount() < $limit;
     }
 
     /* =========================
-     | POS DAILY LIMIT (SIAP)
+     | POS DAILY LIMIT
      ========================= */
 
     public function dailyPosLimit(): ?int
     {
-        return $this->activeMembership?->membership?->daily_pos_limit;
+        return $this->effective_membership?->daily_pos_limit;
     }
 
     public function todayPosCount(): int
@@ -175,7 +193,13 @@ class User extends Authenticatable
 
     public function canCreateSale(): bool
     {
-        return $this->todayPosCount() < $this->dailyPosLimit();
+        $limit = $this->dailyPosLimit();
+        
+        if (is_null($limit)) {
+            return true; // unlimited
+        }
+
+        return $this->todayPosCount() < $limit;
     }
 
     /* =========================
@@ -184,6 +208,6 @@ class User extends Authenticatable
 
     public function canExportReport(): bool
     {
-        return (bool) ($this->activeMembership?->membership?->can_export_report);
+        return (bool) ($this->effective_membership?->can_export_report ?? false);
     }
 }
