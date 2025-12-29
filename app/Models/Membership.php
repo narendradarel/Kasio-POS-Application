@@ -11,7 +11,7 @@ class Membership extends Model
 
     protected $fillable = [
         'name',
-        'limits',
+        'price',
         'product_limit',
         'user_limit',
         'customer_limit',
