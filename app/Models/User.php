@@ -79,10 +79,9 @@ class User extends Authenticatable
                 $q->whereNull('ends_at')
                     ->orWhere('ends_at', '>=', now());
             })
-            ->latest(); // Tambahkan ini untuk ambil data terbaru
+            ->latest();
     }
 
-    // TAMBAHKAN METHOD INI (yang dipanggil di blade)
     public function getEffectiveMembershipAttribute()
     {
         $activeSub = $this->activeMembership()->with('membership')->first();
@@ -101,37 +100,13 @@ class User extends Authenticatable
     }
 
     /* =========================
-    | USER LIMIT
-    ========================= */
-
-    public function userLimit(): int
-    {
-        return (int) ($this->effective_membership?->user_limit ?? 1);
-    }
-
-    public function userCount(): int
-    {
-        return UserModel::count();
-    }
-
-    public function canCreateUser(): bool
-    {
-        $limit = $this->userLimit();
-
-        if ($limit === 0) {
-            return false;
-        }
-
-        return $this->userCount() < $limit;
-    }
-
-    /* =========================
      | PRODUCT / ITEM LIMIT
      ========================= */
 
     public function productCount(): int
     {
-        return Item::count();
+        // ✅ Count hanya produk milik user/business ini
+        return Item::where('user_id', $this->id)->count();
     }
 
     public function productLimit(): ?int
@@ -161,7 +136,8 @@ class User extends Authenticatable
 
     public function customerCount(): int
     {
-        return Customer::count();
+        // ✅ Count hanya customer milik user/business ini
+        return Customer::where('user_id', $this->id)->count();
     }
 
     public function canCreateCustomer(): bool

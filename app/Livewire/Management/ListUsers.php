@@ -30,13 +30,13 @@ class ListUsers extends Component implements HasActions, HasSchemas, HasTable
             ->query(fn (): Builder => User::query())
             ->columns([
                 TextColumn::make('name')
-                ->searchable()
-                ->sortable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('email')
-                ->searchable(),
+                    ->searchable(),
                 TextColumn::make('role')
-                ->searchable()
-                ->badge()
+                    ->searchable()
+                    ->badge()
             ])
             ->filters([
                 //
@@ -46,29 +46,32 @@ class ListUsers extends Component implements HasActions, HasSchemas, HasTable
                     ->label('Add User')
                     ->icon('heroicon-o-user-plus')
                     ->url(fn () => route('users.create'))
-                    ->disabled(fn () => ! auth()->user()->canCreateUser())
-                    ->tooltip(
-                        fn () => ! auth()->user()->canCreateUser()
-                            ? 'Limit user tercapai. Upgrade membership.'
-                            : null
-                    ),
-                Action::make('upgrade')
-                    ->label('Upgrade')
-                    ->icon('heroicon-o-star')
-                    ->color('warning')
-                    ->url(route('membership.index'))
-                    ->visible(fn () => ! auth()->user()->canCreateUser()),
-    ])
+                    // ✅ HAPUS disabled & tooltip (tidak ada limit user)
+                    // ->disabled(fn () => ! auth()->user()->canCreateUser())
+                    // ->tooltip(
+                    //     fn () => ! auth()->user()->canCreateUser()
+                    //         ? 'Limit user tercapai. Upgrade membership.'
+                    //         : null
+                    // ),
+                
+                // ✅ HAPUS action upgrade (tidak perlu lagi)
+                // Action::make('upgrade')
+                //     ->label('Upgrade')
+                //     ->icon('heroicon-o-star')
+                //     ->color('warning')
+                //     ->url(route('membership.index'))
+                //     ->visible(fn () => ! auth()->user()->canCreateUser()),
+            ])
             ->recordActions([
                 Action::make('delete')
-                ->requiresConfirmation()
-                ->color('danger')
-                ->action(fn (User $record) => $record->delete())
-                ->successNotification(
-                     Notification::make()
-                        ->title('User Deleted successfully')
-                        ->success()
-                ),
+                    ->requiresConfirmation()
+                    ->color('danger')
+                    ->action(fn (User $record) => $record->delete())
+                    ->successNotification(
+                        Notification::make()
+                            ->title('User Deleted successfully')
+                            ->success()
+                    ),
                 Action::make('edit')
                     ->url(fn(User $record): string => route('user.update', $record))
             ])

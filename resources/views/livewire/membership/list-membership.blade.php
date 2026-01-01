@@ -82,13 +82,6 @@
                     </div>
                 </div>
             </div>
-
-            @if($membershipName !== 'Premium')
-                <a href="#paket"
-                   class="ml-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
-                    Upgrade
-                </a>
-            @endif
         </div>
     </div>
 

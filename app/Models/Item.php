@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
 {
-    /** @use HasFactory<\Database\Factories\ItemFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -15,7 +14,23 @@ class Item extends Model
         'sku',
         'price',
         'status',
+        'user_id',
     ];
+
+    protected static function booted()
+    {
+        // ✅ OTOMATIS SET user_id saat create
+        static::creating(function ($item) {
+            if (auth()->check()) {
+                $item->user_id = auth()->id();
+            }
+        });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function inventory()
     {

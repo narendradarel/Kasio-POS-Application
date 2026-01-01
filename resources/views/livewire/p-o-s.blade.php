@@ -1,35 +1,4 @@
 <div class="flex h-screen bg-gray-100 dark:bg-neutral-900 font-sans antialiased text-gray-800 dark:text-gray-100">
-    {{-- === 1. TAMBAHAN: HARDBLOCK OVERLAY === --}}
-    @if($isLocked)
-        <div class="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-black/60 backdrop-blur-sm">
-            <div
-                class="bg-white dark:bg-neutral-800 p-8 rounded-2xl shadow-2xl text-center max-w-md mx-4 border border-red-200 dark:border-red-900">
-                <div class="text-red-500 mb-4 flex justify-center">
-                    {{-- Icon Gembok --}}
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-16 h-16">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-gray-100">Limit Transaksi Habis!</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Kuota harian paket Anda telah mencapai batas <strong>{{ $todaySales }} / {{ $dailyLimit }}</strong>
-                    transaksi.
-                </p>
-                <div class="space-y-3">
-                    <button disabled class="w-full py-3 bg-gray-400 text-white font-bold rounded-xl cursor-not-allowed">
-                        Tidak Bisa Transaksi
-                    </button>
-                    {{-- Tombol Upgrade (Opsional, arahkan ke route pricing kamu) --}}
-                    {{-- <a href="/pricing"
-                        class="block w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition">
-                        Upgrade Sekarang
-                    </a> --}}
-                </div>
-            </div>
-        </div>
-    @endif
 
     <div class="w-2/3 p-6 flex flex-col">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Products</h2>

@@ -13,7 +13,6 @@ class Membership extends Model
         'name',
         'price',
         'product_limit',
-        'user_limit',
         'customer_limit',
         'daily_pos_limit',
         'can_export_report',
