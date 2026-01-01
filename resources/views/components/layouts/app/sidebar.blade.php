@@ -110,7 +110,7 @@
 
             {{-- Upgrade Link (hanya untuk Free & Basic) --}}
             @if($membership !== 'Premium')
-                <a href="{{ route('membership.index')"
+                <a href="{{ route('membership.index') }}"
                     class="mt-1.5 block text-center text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                     wire:navigate>
                     Upgrade →

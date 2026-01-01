@@ -15,30 +15,8 @@ class CreateUser extends Component
     public $role = 'cashier'; // Default cashier
     public $password = '';
 
-    public function mount()
-    {
-        $user = auth()->user();
-
-        // 1. CEK LIMIT SAAT LOAD (UX)
-        if (! $user->canCreateUser()) {
-            Notification::make()
-                ->title('Akses Ditolak')
-                ->body("Limit User paket Membership Anda sudah habis.")
-                ->danger()
-                ->send();
-
-            $this->redirect(route('users.index'), navigate: true);
-        }
-    }
-
     public function save()
     {
-        // 2. CEK LIMIT SAAT SAVE (SECURITY)
-        if (! auth()->user()->canCreateUser()) {
-            Notification::make()->title('Gagal')->body('Limit Habis!')->danger()->send();
-            return;
-        }
-
         // Validasi Manual Livewire
         $validated = $this->validate([
             'name'     => 'required|min:3',

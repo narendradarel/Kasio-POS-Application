@@ -12,9 +12,25 @@ class Customer extends Model
 
     protected $fillable = [
         'name',
-        'email',
+        'email', 
         'phone',
+        'user_id', // ✅ TAMBAH INI
     ];
+
+    protected static function booted()
+    {
+        // ✅ OTOMATIS SET user_id saat create
+        static::creating(function ($customer) {
+            if (auth()->check()) {
+                $customer->user_id = auth()->id();
+            }
+        });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class); // ✅ TAMBAH INI
+    }
 
     public function sales()
     {

@@ -18,7 +18,6 @@ class ListMembership extends Component
                 'price' => 0,
                 'features' => [
                     '50 Produk',
-                    '1 User',
                     '20 Customer',
                     'POS harian max 20',
                     'Tidak bisa cetak laporan',
@@ -30,7 +29,6 @@ class ListMembership extends Component
                 'price' => 50000,
                 'features' => [
                     '500 Produk',
-                    '10 User',
                     '500 Customer',
                     'POS harian max 100',
                     'Bisa cetak laporan',
@@ -42,7 +40,6 @@ class ListMembership extends Component
                 'price' => 100000,
                 'features' => [
                     'Unlimited Produk',
-                    'Unlimited User',
                     'Unlimited Customer',
                     'Unlimited POS',
                     'Bisa cetak laporan',
@@ -51,32 +48,33 @@ class ListMembership extends Component
         ];
     }
 
-public function selectMembership(string $name)
-{
-    $membership = collect($this->memberships)
-        ->firstWhere('name', $name);
+    public function selectMembership(string $name)
+    {
+        $membership = collect($this->memberships)
+            ->firstWhere('name', $name);
 
-    if (! $membership) {
-        abort(404);
+        if (! $membership) {
+            abort(404);
+        }
+
+        session([
+            'membership_payment' => [
+                'name'   => $membership['name'],
+                'price'  => $membership['price'],
+                'status' => 'pending',
+            ],
+        ]);
+
+        return redirect()->route(
+            'membership.checkout',
+            ['membershipName' => $membership['name']]
+        );
     }
-
-    session([
-        'membership_payment' => [
-            'name' => $membership['name'],
-            'price' => $membership['price'],
-            'status' => 'pending',
-        ]
-    ]);
-
-    return redirect()->route(
-        'membership.checkout',
-        ['membershipName' => $membership['name']]
-    );
-}
-
 
     public function render(): View
     {
-        return view('livewire.membership.list-membership');
+        return view('livewire.membership.list-membership', [
+            'memberships' => $this->memberships,
+        ]);
     }
 }
