@@ -1,4 +1,4 @@
-name: Deploy kasio 
+name: Deploy Laravel kasio (Vite + SSL)
 
 on:
   push:
@@ -11,14 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - uses: shivammathur/setup-php@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           
-      - run: composer install --no-dev --optimize-autoloader
+      - name: Composer install
+        run: composer install --no-dev --optimize-autoloader
         
-      - uses: azure/webapps-deploy@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install NPM & Build Vite
+        run: |
+          npm ci
+          npm run build
+          
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'kasio'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_KASIO }}
-          package: .  # Folder langsung!
+          package: .
