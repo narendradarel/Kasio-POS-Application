@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MidtransWebhookController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Livewire\Customer\CreateCustomer;
 use App\Livewire\Customer\EditCustomers;
 use App\Livewire\Customer\ListCustomers;
@@ -30,6 +31,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])
+    ->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
+    ->name('google.callback');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -49,6 +54,8 @@ Route::get('/sales/{sale}/receipt', function (\App\Models\Sale $sale) {
 })->name('sales.receipt');
 
 Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handle'])->name('midtrans.webhook');
+
+
 
 Route::middleware(['auth'])->group(function () {
     //users
