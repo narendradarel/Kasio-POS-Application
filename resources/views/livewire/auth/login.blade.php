@@ -43,6 +43,11 @@
         </div>
     </form>
 
+    <flux:button href="{{ route('google.redirect') }}" variant="outline" class="w-full gap-2">
+    <svg class="size-5"><!-- SVG Google --></svg>
+    {{ __('Log in with Google') }}
+    </flux:button>
+
     @if (Route::has('register'))
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
             <span>{{ __('Don\'t have an account?') }}</span>

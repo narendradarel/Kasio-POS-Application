@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User as UserModel;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,10 +13,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
+        'name', 'email', 'password',
+        'google_id', 'avatar', 'role',
     ];
 
     protected $hidden = [
@@ -44,11 +41,11 @@ class User extends Authenticatable
 
             if ($freePlan) {
                 UserMembership::create([
-                    'user_id'       => $user->id,
+                    'user_id' => $user->id,
                     'membership_id' => $freePlan->id,
-                    'status'        => 'active',
-                    'started_at'    => now(),
-                    'ends_at'       => null,
+                    'status' => 'active',
+                    'started_at' => now(),
+                    'ends_at' => null,
                 ]);
             }
         });
@@ -170,7 +167,7 @@ class User extends Authenticatable
     public function canCreateSale(): bool
     {
         $limit = $this->dailyPosLimit();
-        
+
         if (is_null($limit)) {
             return true; // unlimited
         }
