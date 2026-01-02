@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>KASIO - POS Retail Indonesia</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/css/app.css', 'resources/js/app.js')
 </head>
 <body class="antialiased font-sans bg-white dark:bg-slate-900 text-black dark:text-white">
     
