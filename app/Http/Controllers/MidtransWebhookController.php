@@ -11,15 +11,14 @@ class MidtransWebhookController extends Controller
 {
     public function handle(Request $request)
     {
-        \Log::info('🚀 MIDTRANS WEBHOOK RECEIVED', $request->all());
+        \Log::info('MIDTRANS WEBHOOK RECEIVED', $request->all());
 
         try {
             // INSTANTIASI CallbackService untuk verifikasi
             $callbackService = new CallbackService();
             
-            // ✅ VERIFIKASI SIGNATURE (KRITIS!)
             if (!$callbackService->isSignatureKeyVerified()) {
-                \Log::error('❌ INVALID SIGNATURE KEY');
+                \Log::error('INVALID SIGNATURE KEY');
                 return response()->json(['status' => 'failed'], 403);
             }
 
@@ -27,11 +26,11 @@ class MidtransWebhookController extends Controller
             $payment = $callbackService->getOrder();
 
             if (!$payment) {
-                \Log::error('❌ Payment not found: ' . $notification->order_id);
+                \Log::error('Payment not found: ' . $notification->order_id);
                 return response()->json(['status' => 'not_found'], 404);
             }
 
-            \Log::info('✅ Payment found', ['order_id' => $payment->order_id]);
+            \Log::info('Payment found', ['order_id' => $payment->order_id]);
 
             // Update payment data
             $payment->update([
@@ -40,9 +39,8 @@ class MidtransWebhookController extends Controller
                 'payload' => $request->all(),
             ]);
 
-            // 🟢 SUCCESS PAYMENT - UPDATE MEMBERSHIP
             if ($callbackService->isSuccess()) {
-                \Log::info('🟢 PAYMENT SUCCESS - UPDATING MEMBERSHIP');
+                \Log::info('PAYMENT SUCCESS - UPDATING MEMBERSHIP');
                 
                 // Update payment status
                 $payment->update(['status' => 'paid']);
@@ -64,7 +62,7 @@ class MidtransWebhookController extends Controller
             return response()->json(['status' => 'success']);
 
         } catch (\Exception $e) {
-            \Log::error('💥 WEBHOOK ERROR: ' . $e->getMessage());
+            \Log::error('WEBHOOK ERROR: ' . $e->getMessage());
             return response()->json(['status' => 'error'], 500);
         }
     }
