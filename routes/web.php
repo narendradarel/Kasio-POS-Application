@@ -58,15 +58,14 @@ Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handle'])->
 Route::middleware(['auth'])->group(function () {
     
     // ====================================================
-    //  AREA KHUSUS ADMIN (Tanpa Middleware yang bikin error)
+    //  ADMIN
     // ====================================================
-    // Security check akan dilakukan di dalam file Livewire-nya langsung
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', AdminDashboard::class)->name('dashboard');
     });
 
     // ====================================================
-    //  AREA POS & USER
+    //  POS & USER
     // ====================================================
 
     // users
