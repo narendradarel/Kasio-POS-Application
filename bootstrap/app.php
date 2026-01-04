@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'midtrans/webhook', 
         ]);
     })
+    
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

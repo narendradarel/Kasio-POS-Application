@@ -14,6 +14,7 @@ class MembershipPayment extends Model
         'gateway',
         'payment_type',
         'transaction_status',
+        'status',
         'payload',
     ];
 
