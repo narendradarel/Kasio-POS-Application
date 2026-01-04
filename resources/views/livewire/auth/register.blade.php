@@ -53,6 +53,21 @@
                 {{ __('Create account') }}
             </flux:button>
         </div>
+
+        <div class="flex items-center gap-4">
+        <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></div>
+        <span class="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+            {{ __('Or') }}
+        </span>
+        <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></div>
+    </div>
+
+    <flux:button href="{{ route('google.redirect') }}" variant="outline" class="w-full gap-2">
+        {{-- Ikon Google --}}
+        <img src="{{ asset('image/icons8-google-logo.svg') }}" class="size-5" alt="Google Logo">
+        {{ __('Sign Up with Google') }}
+    </flux:button>
+
     </form>
 
     <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">

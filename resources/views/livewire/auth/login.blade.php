@@ -1,11 +1,9 @@
 <div class="flex flex-col gap-6">
     <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
 
-    <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
 
     <form method="POST" wire:submit="login" class="flex flex-col gap-6">
-        <!-- Email Address -->
         <flux:input
             wire:model="email"
             :label="__('Email address')"
@@ -16,7 +14,6 @@
             placeholder="email@example.com"
         />
 
-        <!-- Password -->
         <div class="relative">
             <flux:input
                 wire:model="password"
@@ -35,7 +32,6 @@
             @endif
         </div>
 
-        <!-- Remember Me -->
         <flux:checkbox wire:model="remember" :label="__('Remember me')" />
 
         <div class="flex items-center justify-end">
@@ -43,9 +39,18 @@
         </div>
     </form>
 
+    <div class="flex items-center gap-4">
+        <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></div>
+        <span class="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+            {{ __('Or') }}
+        </span>
+        <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-700"></div>
+    </div>
+
     <flux:button href="{{ route('google.redirect') }}" variant="outline" class="w-full gap-2">
-    <svg class="size-5"><!-- SVG Google --></svg>
-    {{ __('Log in with Google') }}
+        {{-- Ikon Google --}}
+        <img src="{{ asset('image/icons8-google-logo.svg') }}" class="size-5" alt="Google Logo">
+        {{ __('Log in with Google') }}
     </flux:button>
 
     @if (Route::has('register'))
