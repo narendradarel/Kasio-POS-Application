@@ -9,9 +9,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            MembershipSeeder::class, // Jalankan ini duluan
-            UserSeeder::class,       // Baru buat user
-            UserMembershipSeeder::class, // Baru assign paket ke user
+            AdminSeeder::class,
+            MembershipSeeder::class, 
+            UserSeeder::class,      
+            UserMembershipSeeder::class, 
         ]);
     }
 }
