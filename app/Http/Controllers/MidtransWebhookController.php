@@ -1,69 +1,76 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\MembershipPayment;
 use App\Models\UserMembership;
-use App\Services\Midtrans\CallbackService;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MidtransWebhookController extends Controller
 {
     public function handle(Request $request)
     {
-        \Log::info('MIDTRANS WEBHOOK RECEIVED', $request->all());
+        Log::info('MIDTRANS WEBHOOK RECEIVED', $request->all());
 
         try {
-            // INSTANTIASI CallbackService untuk verifikasi
-            $callbackService = new CallbackService();
+            // RAW PAYLOAD - NO CallbackService
+            $notif = $request->all();
+            $orderId = $notif['order_id'] ?? null;
+            $status = $notif['transaction_status'] ?? null;
             
-            if (!$callbackService->isSignatureKeyVerified()) {
-                \Log::error('INVALID SIGNATURE KEY');
-                return response()->json(['status' => 'failed'], 403);
+            Log::info('Parsed webhook', [
+                'order_id' => $orderId,
+                'status' => $status
+            ]);
+            
+            if (!$orderId || !$status) {
+                Log::error('Missing order_id/status');
+                return response()->json(['status' => 'missing_data'], 200);
             }
 
-            $notification = $callbackService->getNotification();
-            $payment = $callbackService->getOrder();
-
+            // Cari payment
+            $payment = MembershipPayment::where('order_id', $orderId)->first();
             if (!$payment) {
-                \Log::error('Payment not found: ' . $notification->order_id);
-                return response()->json(['status' => 'not_found'], 404);
+                Log::error('Payment not found', ['order_id' => $orderId]);
+                return response()->json(['status' => 'payment_not_found'], 200);
             }
 
-            \Log::info('Payment found', ['order_id' => $payment->order_id]);
-
-            // Update payment data
+            // Update payment
             $payment->update([
-                'transaction_status' => $notification->transaction_status,
-                'payment_type' => $notification->payment_type ?? null,
-                'payload' => $request->all(),
+                'transaction_status' => $status,
+                'payment_type' => $notif['payment_type'] ?? null,
+                'payload' => $notif,
             ]);
 
-            if ($callbackService->isSuccess()) {
-                \Log::info('PAYMENT SUCCESS - UPDATING MEMBERSHIP');
-                
-                // Update payment status
+            // AKTIVASI MEMBERSHIP
+            if (in_array($status, ['settlement', 'capture'])) {
                 $payment->update(['status' => 'paid']);
                 
-                // CRITICAL: Update membership
                 UserMembership::updateOrCreate(
                     ['user_id' => $payment->user_id],
                     [
                         'membership_id' => $payment->membership_id,
+                        'order_id' => $orderId,
                         'started_at' => now(),
                         'ends_at' => now()->addYear(),
                         'status' => 'active',
                     ]
                 );
                 
-                \Log::info('✅ Membership activated for user: ' . $payment->user_id);
+                Log::info('✅ Membership ACTIVATED', [
+                    'user_id' => $payment->user_id,
+                    'order_id' => $orderId
+                ]);
             }
 
-            return response()->json(['status' => 'success']);
+            return response()->json(['status' => 'success'], 200);
 
         } catch (\Exception $e) {
-            \Log::error('WEBHOOK ERROR: ' . $e->getMessage());
-            return response()->json(['status' => 'error'], 500);
+            Log::error('WEBHOOK ERROR', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['status' => 'error'], 200);  // Midtrans tetap 200
         }
     }
 }
