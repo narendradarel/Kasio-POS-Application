@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\MidtransWebhookController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\MidtransWebhookController;
 use App\Livewire\Customer\CreateCustomer;
 use App\Livewire\Customer\EditCustomers;
 use App\Livewire\Customer\ListCustomers;
@@ -17,14 +17,14 @@ use App\Livewire\Management\EditPaymentMethod;
 use App\Livewire\Management\EditUser;
 use App\Livewire\Management\ListPaymentMethods;
 use App\Livewire\Management\ListUsers;
+use App\Livewire\Membership\CheckoutMembership;
 use App\Livewire\Membership\ListMembership;
 use App\Livewire\POS;
 use App\Livewire\Sales\ListSales;
-use App\Livewire\Membership\Index as MembershipIndex;
-use App\Livewire\Membership\CheckoutMembership;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use App\Livewire\Admin\Dashboard as AdminDashboard; 
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -55,37 +55,46 @@ Route::get('/sales/{sale}/receipt', function (\App\Models\Sale $sale) {
 
 Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handle'])->name('midtrans.webhook');
 
-
-
 Route::middleware(['auth'])->group(function () {
-    //users
-    Route::get('/manage-users',ListUsers::class)->name('users.index');
-    Route::get('/create-user',CreateUser::class)->name('users.create');
-    Route::get('/edit-user/{record}',EditUser::class)->name('user.update');
-    //inventory
-    Route::get('/manage-items',ListItems::class)->name('items.index');
-    Route::get('/create-item',CreateItem::class)->name('items.create');
-    Route::get('/edit-item/{record}',EditItem::class)->name('item.update');
-    Route::get('/manage-inventories',ListInventories::class)->name('inventories.index');
-    Route::get('/create-inventory',CreateInventory::class)->name('inventories.create');
-    Route::get('/edit-inventory/{record}',EditInventory::class)->name('inventory.update');
-    //sales
-    Route::get('/manage-sales',ListSales::class)->name('sales.index');
-    //customers
-    Route::get('/manage-customers',ListCustomers::class)->name('customers.index');
-    Route::get('/create-customer',CreateCustomer::class)->name('customers.create');
-    Route::get('/edit-customer/{record}',EditCustomers::class)->name('customer.update');
-    //payment method
-    Route::get('/create-payment-method',CreatePaymentMethod::class)->name('payment-method.create');
-    Route::get('/manage-payment-methods',ListPaymentMethods::class)->name('payment.method.index');
-    Route::get('/edit-payment-method/{record}',EditPaymentMethod::class)->name('payment-method.update');
+    
+    // ====================================================
+    //  ADMIN
+    // ====================================================
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', AdminDashboard::class)->name('dashboard');
+    });
 
-    Route::get('/pos',POS::class)->name('pos');
+    // ====================================================
+    //  POS & USER
+    // ====================================================
 
-    Route::get('/memberships',ListMembership::class)->name('membership.index');
-    Route::get( '/membership-checkout/{membershipName}', CheckoutMembership::class)->name('membership.checkout');
+    // users
+    Route::get('/manage-users', ListUsers::class)->name('users.index');
+    Route::get('/create-user', CreateUser::class)->name('users.create');
+    Route::get('/edit-user/{record}', EditUser::class)->name('user.update');
+    // inventory
+    Route::get('/manage-items', ListItems::class)->name('items.index');
+    Route::get('/create-item', CreateItem::class)->name('items.create');
+    Route::get('/edit-item/{record}', EditItem::class)->name('item.update');
+    Route::get('/manage-inventories', ListInventories::class)->name('inventories.index');
+    Route::get('/create-inventory', CreateInventory::class)->name('inventories.create');
+    Route::get('/edit-inventory/{record}', EditInventory::class)->name('inventory.update');
+    // sales
+    Route::get('/manage-sales', ListSales::class)->name('sales.index');
+    // customers
+    Route::get('/manage-customers', ListCustomers::class)->name('customers.index');
+    Route::get('/create-customer', CreateCustomer::class)->name('customers.create');
+    Route::get('/edit-customer/{record}', EditCustomers::class)->name('customer.update');
+    // payment method
+    Route::get('/create-payment-method', CreatePaymentMethod::class)->name('payment-method.create');
+    Route::get('/manage-payment-methods', ListPaymentMethods::class)->name('payment.method.index');
+    Route::get('/edit-payment-method/{record}', EditPaymentMethod::class)->name('payment-method.update');
 
+    Route::get('/pos', POS::class)->name('pos');
 
-}); 
+    Route::get('/memberships', ListMembership::class)->name('membership.index');
+    Route::get('/membership-checkout/{membershipName}', CheckoutMembership::class)->name('membership.checkout');
+
+});
 
 require __DIR__.'/auth.php';

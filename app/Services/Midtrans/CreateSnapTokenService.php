@@ -39,6 +39,12 @@ class CreateSnapTokenService extends Midtrans
             \Log::info('=== Midtrans Request START ===');
             \Log::info('Params:', $params);
             
+            // --- FIX START: Tambahkan ini untuk memperbaiki error PHP 8.x di Azure ---
+            \Midtrans\Config::$curlOptions = [
+                CURLOPT_HTTPHEADER => [] 
+            ];
+            // --- FIX END ---
+
             $snapToken = \Midtrans\Snap::getSnapToken($params);
             
             \Log::info('Snap Token Success:', ['token' => $snapToken]);

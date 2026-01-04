@@ -13,7 +13,6 @@ class MembershipSeeder extends Seeder
         DB::table('memberships')->insert([
             'name' => 'Free',
             'product_limit' => 50,       // Sesuai gambar
-            'user_limit' => 1,           // Sesuai gambar
             'customer_limit' => 20,      // Sesuai gambar
             'daily_pos_limit' => 20,     // Sesuai gambar
             'can_export_report' => false,// Sesuai gambar
@@ -25,7 +24,6 @@ class MembershipSeeder extends Seeder
         DB::table('memberships')->insert([
             'name' => 'Basic',
             'product_limit' => 500,
-            'user_limit' => 10,
             'customer_limit' => 500,
             'daily_pos_limit' => 100,
             'can_export_report' => true,
@@ -37,7 +35,6 @@ class MembershipSeeder extends Seeder
         DB::table('memberships')->insert([
             'name' => 'Premium',
             'product_limit' => 0,    // 0 = Unlimited
-            'user_limit' => 0,
             'customer_limit' => 0,   // Unlimited
             'daily_pos_limit' => 0,  // Unlimited
             'can_export_report' => true,

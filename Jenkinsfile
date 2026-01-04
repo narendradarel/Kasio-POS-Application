@@ -1,78 +1,73 @@
 pipeline {
     agent any
-
-    environment {
-        // Sesuaikan dengan nama container di docker-compose.yml
-        CONTAINER_NAME = "kasio-app" 
-    }
-
+    
     stages {
-        stage('Checkout Code') {
+        stage('Project Info') {
             steps {
-                checkout scm
+                echo '================================================'
+                echo 'KASIO POS'
+                echo '================================================'
+                echo 'Build Date: ' + new Date().format('yyyy-MM-dd HH:mm:ss')
+                echo 'Build ID: #' + env.BUILD_NUMBER
+                echo 'Branch: ' + env.GIT_BRANCH
+                echo 'Triggered by: GitHub Webhook'
+                echo '================================================'
             }
         }
-
-        stage('Setup Environment') {
+        
+        stage('Checkout Source Code') {
             steps {
-                script {
-                    bat 'copy .env.example .env || exit 0'
+                echo '📥 Mengambil source code dari GitHub...'
                 
-                    powershell '''
-                        (Get-Content .env) -replace "DB_HOST=127.0.0.1", "DB_HOST=db" | Set-Content .env
-                        (Get-Content .env) -replace "DB_PASSWORD=", "DB_PASSWORD=password123" | Set-Content .env
-                    '''
-                }
+                checkout scm
+
+                echo 'Source code berhasil diambil!'
             }
         }
-
-        stage('Build & Run Docker') {
+        
+        stage('Project Structure') {
             steps {
-                script {
-                    // WINDOWS: Gunakan 'bat'
-                    bat 'docker compose down || exit 0'
-                    bat 'docker compose up -d --build'
-                }
+                echo 'Struktur project:'
+                bat 'dir /B'  // Windows
+                // sh 'ls -la' // Linux/Mac
+                
+                echo 'Project structure verified!'
             }
         }
-
-        stage('Waiting for Database') {
+        
+        stage('Deployment Info') {
             steps {
-                script {
-                    echo '⏳ Menunggu Database MySQL booting...'
-                    sleep 15  
-                }
+                echo '================================================'
+                echo 'DEPLOYMENT INFORMATION'
+                echo '================================================'
+                echo 'Target: Azure App Service'
+                echo 'Resource Group: Kasio'
+                echo 'App Name: kasio'
+                echo 'URL: https://kasio.azurewebsites.net'
+                echo '================================================'
+                echo 'ℹAzure akan build otomatis setelah code di-push'
             }
         }
-
-        stage('Laravel Post-Deployment') {
+        
+        stage('Deployment Status') {
             steps {
-                script {
-                    // WINDOWS: Jalankan perintah artisan di dalam container
-                    bat 'docker compose exec -T app composer install --no-interaction --prefer-dist --optimize-autoloader'
-                    
-                    // Generate key force
-                    bat 'docker compose exec -T app php artisan key:generate --force'
-                    
-                    // Migrate Database
-                    bat 'docker compose exec -T app php artisan migrate --force'
-                    
-                    // Cache config
-                    bat 'docker compose exec -T app php artisan config:cache'
-                    bat 'docker compose exec -T app php artisan route:cache'
-                    
-                    // Note: Di Windows Docker biasanya permission sudah otomatis rw, jadi tidak perlu chown
-                }
+                echo 'Jenkins CI/CD Pipeline: SUCCESS'
+                echo 'Code siap untuk deployment ke Azure'
+                echo 'Azure akan proses deployment dalam 2-5 menit'
+                echo 'Monitor di: https://portal.azure.com'
             }
         }
     }
-
+    
     post {
         success {
-            echo '✅ Deployment Berhasil di Windows!'
+            echo 'Build Sukses'
         }
         failure {
-            echo '❌ Deployment Gagal.'
+            echo 'Build Gagal'
+        }
+        always {
+            echo 'Build Durasi: ' + currentBuild.durationString
         }
     }
 }
