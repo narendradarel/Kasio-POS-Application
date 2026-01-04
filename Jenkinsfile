@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     stages {
-        stage('📋 Project Info') {
+        stage('Project Info') {
             steps {
                 echo '================================================'
                 echo 'KASIO POS'
@@ -15,23 +15,17 @@ pipeline {
             }
         }
         
-        stage('🔍 Checkout Source Code') {
+        stage('Checkout Source Code') {
             steps {
                 echo '📥 Mengambil source code dari GitHub...'
+                
                 checkout scm
-                
-                script {
-                    def commitMsg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-                    def commitAuthor = sh(script: 'git log -1 --pretty=%an', returnStdout: true).trim()
-                    echo "📝 Commit: ${commitMsg}"
-                    echo "👤 Author: ${commitAuthor}"
-                }
-                
+
                 echo 'Source code berhasil diambil!'
             }
         }
         
-        stage('📦 Project Structure') {
+        stage('Project Structure') {
             steps {
                 echo 'Struktur project:'
                 bat 'dir /B'  // Windows
@@ -41,7 +35,7 @@ pipeline {
             }
         }
         
-        stage('🌐 Deployment Info') {
+        stage('Deployment Info') {
             steps {
                 echo '================================================'
                 echo 'DEPLOYMENT INFORMATION'
@@ -55,7 +49,7 @@ pipeline {
             }
         }
         
-        stage('✅ Deployment Status') {
+        stage('Deployment Status') {
             steps {
                 echo 'Jenkins CI/CD Pipeline: SUCCESS'
                 echo 'Code siap untuk deployment ke Azure'
