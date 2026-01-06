@@ -3,26 +3,26 @@
 namespace App\Livewire\Management;
 
 use App\Models\User;
-use Livewire\Component;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Illuminate\Contracts\View\View;
 use Filament\Actions\BulkActionGroup;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Contracts\HasTable;
-use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Schemas\Contracts\HasSchemas;
-use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Livewire\Component;
 
 class ListUsers extends Component implements HasActions, HasSchemas, HasTable
 {
     use InteractsWithActions;
-    use InteractsWithTable;
     use InteractsWithSchemas;
+    use InteractsWithTable;
 
     public function table(Table $table): Table
     {
@@ -36,7 +36,7 @@ class ListUsers extends Component implements HasActions, HasSchemas, HasTable
                     ->searchable(),
                 TextColumn::make('role')
                     ->searchable()
-                    ->badge()
+                    ->badge(),
             ])
             ->filters([
                 //
@@ -45,15 +45,15 @@ class ListUsers extends Component implements HasActions, HasSchemas, HasTable
                 Action::make('create')
                     ->label('Add User')
                     ->icon('heroicon-o-user-plus')
-                    ->url(fn () => route('users.create'))
-                    // ✅ HAPUS disabled & tooltip (tidak ada limit user)
-                    // ->disabled(fn () => ! auth()->user()->canCreateUser())
-                    // ->tooltip(
-                    //     fn () => ! auth()->user()->canCreateUser()
-                    //         ? 'Limit user tercapai. Upgrade membership.'
-                    //         : null
-                    // ),
-                
+                    ->url(fn () => route('users.create')),
+                // ✅ HAPUS disabled & tooltip (tidak ada limit user)
+                // ->disabled(fn () => ! auth()->user()->canCreateUser())
+                // ->tooltip(
+                //     fn () => ! auth()->user()->canCreateUser()
+                //         ? 'Limit user tercapai. Upgrade membership.'
+                //         : null
+                // ),
+
                 // ✅ HAPUS action upgrade (tidak perlu lagi)
                 // Action::make('upgrade')
                 //     ->label('Upgrade')
@@ -66,15 +66,19 @@ class ListUsers extends Component implements HasActions, HasSchemas, HasTable
                 Action::make('delete')
                     ->requiresConfirmation()
                     ->color('danger')
+                    ->visible(fn (User $record): bool => $record->id === auth()->id()) // 👈 hanya untuk dirinya sendiri
                     ->action(fn (User $record) => $record->delete())
                     ->successNotification(
                         Notification::make()
                             ->title('User Deleted successfully')
                             ->success()
                     ),
+
                 Action::make('edit')
-                    ->url(fn(User $record): string => route('user.update', $record))
+                    ->url(fn (User $record): string => route('user.update', $record))
+                    ->visible(fn (User $record): bool => $record->id === auth()->id()), // 👈 hanya untuk dirinya sendiri
             ])
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     //
