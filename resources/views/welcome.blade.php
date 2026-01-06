@@ -197,7 +197,7 @@
                     <ul class="space-y-4 text-sm text-slate-600">
                         <li class="flex items-center gap-3"><span class="text-green-500 font-bold">✓</span> 50 Produk</li>
                         <li class="flex items-center gap-3"><span class="text-green-500 font-bold">✓</span> Cobain fitur transaksi</li>
-                        <li class="flex items-center gap-3"><span class="text-green-500 font-bold">✓</span> 1 Kasir</li>
+                        <li class="flex items-center gap-3"><span class="text-green-500 font-bold">✓</span> Laporan Penjualan</li>
                     </ul>
                 </div>
 
@@ -213,7 +213,7 @@
                     <a href="{{ route('register') }}" class="block w-full py-4 px-6 bg-white text-slate-900 font-bold rounded-xl text-center hover:bg-indigo-50 transition-all mb-8 shadow-lg">Pilih Paket Basic</a>
                     <ul class="space-y-4 text-sm text-slate-300">
                         <li class="flex items-center gap-3"><span class="text-green-400 font-bold">✓</span> 500 Produk</li>
-                        <li class="flex items-center gap-3"><span class="text-green-400 font-bold">✓</span> Laporan Keuangan Lengkap</li>
+                        <li class="flex items-center gap-3"><span class="text-green-400 font-bold">✓</span> Fitur transaksi 100 kali</li>
                         <li class="flex items-center gap-3"><span class="text-green-400 font-bold">✓</span> Bisa Cetak Laporan Penjualan</li>
                     </ul>
                 </div>
@@ -263,7 +263,7 @@
                         <span class="font-bold text-lg text-slate-900">KASIO</span>
                     </div>
                     <p class="text-sm text-slate-500 leading-relaxed">
-                        Aplikasi kasir yang dibuat dengan ❤️ di Surabaya untuk memajukan UMKM Indonesia.
+                        Aplikasi kasir asli Surabaya untuk memajukan UMKM Indonesia.
                     </p>
                 </div>
                 
@@ -288,7 +288,7 @@
             </div>
             
             <div class="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-                <p class="text-xs text-slate-400">© 2025 PT KASIO Digital Indonesia.</p>
+                <p class="text-xs text-slate-400">© 2025 PT KASIO </p>
                 <div class="flex gap-4">
                    </div>
             </div>
