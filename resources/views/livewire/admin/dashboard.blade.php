@@ -3,7 +3,7 @@
     {{-- SECTION 1: STATISTIK PENGUNJUNG (Simple Bar Chart) --}}
     <div class="bg-white p-6 rounded-lg shadow dark:bg-gray-800">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">
-            Statistik Pengunjung (7 Hari Terakhir)
+            Jumlah Kunjungan (7 Hari Terakhir)
         </h3>
         
         <div class="space-y-4">
@@ -32,7 +32,7 @@
         <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div class="flex justify-between items-center">
                 <span class="text-base font-medium text-gray-700 dark:text-gray-300">
-                    Total Pengunjung (7 Hari)
+                    Total Kunjungan (7 Hari)
                 </span>
                 <span class="text-xl font-bold text-indigo-600 dark:text-indigo-400">
                     {{ array_sum($chartCounts) }}
