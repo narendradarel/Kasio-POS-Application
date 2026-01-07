@@ -70,11 +70,11 @@
                     
                     <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-slate-900 leading-tight mb-6 tracking-tight">
                         Udah Capek Jualan, <br class="hidden sm:block">
-                        Ngurus Kasir <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Ribet?</span>
+                        Ngurus Kasir harus buat laporan juga <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Ribet?</span>
                     </h1>
                     
                     <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-                        KASIO bantu kamu catat penjualan, pantau stok, dan lihat untung rugi cuma dari HP. Gak perlu laptop mahal, yang penting jualan lancar.
+                        KASIO bantu kamu pantau stok, dan cetak laporan dari HP. Gak perlu laptop mahal, yang penting jualan lancar.
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4">
