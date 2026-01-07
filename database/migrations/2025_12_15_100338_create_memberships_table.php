@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('memberships', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // free, basic, premium
+            $table->decimal('price', 10, 2); 
             $table->integer('product_limit')->nullable();
             $table->integer('user_limit')->nullable();
             $table->integer('customer_limit')->nullable();
