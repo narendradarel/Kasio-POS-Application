@@ -34,9 +34,9 @@ class MembershipSeeder extends Seeder
         // 2. Paket PRO (Contoh Unlimited/Berbayar)
         DB::table('memberships')->insert([
             'name' => 'Premium',
-            'product_limit' => 0,    // 0 = Unlimited
-            'customer_limit' => 0,   // Unlimited
-            'daily_pos_limit' => 0,  // Unlimited
+            'product_limit' => null,    // 0 = Unlimited
+            'customer_limit' => null,   // Unlimited
+            'daily_pos_limit' => null,  // Unlimited
             'can_export_report' => true,
             'created_at' => now(),
             'updated_at' => now(),
