@@ -36,30 +36,26 @@ class User extends Authenticatable
 
     protected static function booted(): void
     {
-        // ✅ SET DEFAULT ROLE ADMIN
+        // Default role = admin jika kosong
         static::creating(function (User $user) {
             if (empty($user->role)) {
                 $user->role = 'admin';
             }
         });
 
-        // ✅ AUTO-ASSIGN FREE MEMBERSHIP (HANYA UNTUK ADMIN)
+        // SET FREE MEMBERSHIP UNTUK USER BARU (boleh admin & cashier)
         static::created(function (User $user) {
-            // Hanya admin yang dapat membership record
-            if ($user->role === 'admin') {
-                $freePlan = Membership::where('name', 'Free')->first();
+            $freePlan = Membership::where('name', 'Free')->first();
 
-                if ($freePlan) {
-                    UserMembership::create([
-                        'user_id' => $user->id,
-                        'membership_id' => $freePlan->id,
-                        'status' => 'active',
-                        'started_at' => now(),
-                        'ends_at' => null,
-                    ]);
-                }
+            if ($freePlan) {
+                UserMembership::create([
+                    'user_id'       => $user->id,
+                    'membership_id' => $freePlan->id,
+                    'status'        => 'active',
+                    'started_at'    => now(),
+                    'ends_at'       => null,
+                ]);
             }
-            // Cashier tidak dapat membership record, akan ikut admin
         });
     }
 
@@ -90,66 +86,42 @@ class User extends Authenticatable
         return $this->role === 'cashier';
     }
 
-    /**
-     * Get business owner (Admin pertama di database)
-     */
-    public function getBusinessOwnerAttribute()
-    {
-        return User::where('role', 'admin')->oldest()->first();
-    }
-
     /* =========================
-     | MEMBERSHIP RELATION
+     | MEMBERSHIP RELATIONS
      ========================= */
 
-    /**
-     * Active membership - ambil dari admin jika user adalah cashier
-     */
-    public function activeMembership()
+    // Semua subscription user (riwayat)
+    public function memberships()
     {
-        if ($this->isAdmin()) {
-            return $this->hasOne(UserMembership::class)
-                ->where('status', 'active')
-                ->where(function ($q) {
-                    $q->whereNull('ends_at')
-                        ->orWhere('ends_at', '>=', now());
-                })
-                ->latest();
-        }
-
-        $admin = $this->business_owner;
-        if ($admin) {
-            return $admin->hasOne(UserMembership::class, 'user_id', 'id')
-                ->where('status', 'active')
-                ->where(function ($q) {
-                    $q->whereNull('ends_at')
-                        ->orWhere('ends_at', '>=', now());
-                })
-                ->latest();
-        }
-
-        return null;
+        return $this->hasMany(UserMembership::class);
     }
 
-    public function getEffectiveMembershipAttribute()
-{
-    // Ambil dari admin (baik user admin atau cashier)
-    $admin = $this->isAdmin() ? $this : $this->business_owner;
+    // Active subscription user ini (RELATIONSHIP BIASA)
+    public function activeMembership()
+    {
+        return $this->hasOne(UserMembership::class)
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('ends_at')
+                  ->orWhere('ends_at', '>=', now());
+            })
+            ->latest();
+    }
 
-    if ($admin) {
-        $activeSub = $admin->activeMembership()
+    // Membership plan (Membership model) yang sedang aktif
+    public function getEffectiveMembershipAttribute()
+    {
+        $activeSub = $this->activeMembership()
             ->with('membership')
             ->first();
 
         if ($activeSub && $activeSub->membership) {
             return $activeSub->membership;
         }
+
+        // Fallback ke Free (jaga‑jaga kalau relasi kosong)
+        return Membership::where('name', 'Free')->first();
     }
-
-    // Fallback ke Free
-    return Membership::where('name', 'Free')->first();
-}
-
 
     public function membershipName(): string
     {
@@ -162,7 +134,6 @@ class User extends Authenticatable
 
     public function productCount(): int
     {
-        // ✅ Count hanya produk milik user/business ini
         return Item::where('user_id', $this->id)->count();
     }
 
@@ -193,7 +164,6 @@ class User extends Authenticatable
 
     public function customerCount(): int
     {
-        // ✅ Count hanya customer milik user/business ini
         return Customer::where('user_id', $this->id)->count();
     }
 
@@ -229,7 +199,7 @@ class User extends Authenticatable
         $limit = $this->dailyPosLimit();
 
         if (is_null($limit)) {
-            return true; // unlimited
+            return true;
         }
 
         return $this->todayPosCount() < $limit;
