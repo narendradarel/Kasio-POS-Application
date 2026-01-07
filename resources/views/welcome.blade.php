@@ -69,8 +69,8 @@
                     </div>
                     
                     <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-slate-900 leading-tight mb-6 tracking-tight">
-                        Udah Capek Jualan, <br class="hidden sm:block">
-                        Ngurus Kasir harus buat laporan juga <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Ribet?</span>
+                        Ngurus Kasir<br class="hidden sm:block">
+                        harus buat laporan juga <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Ribet?</span>
                     </h1>
                     
                     <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
