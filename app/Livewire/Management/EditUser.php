@@ -44,7 +44,6 @@ class EditUser extends Component implements HasActions, HasSchemas
                             ->options([
                                 'cashier' => 'Cashier',
                                 'admin' => 'admin',
-                                'other' => 'Other',
                             ])
                             ->native(false),
                         TextInput::make('password')
